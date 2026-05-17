@@ -4,16 +4,18 @@ import { Link, useSearchParams } from "react-router-dom";
 import { type Agent, api } from "../lib/api";
 import { StatusBadge } from "../components/bits";
 
+type Usage = Awaited<ReturnType<typeof api.usage>>;
+
 export function Dashboard() {
   const [agents, setAgents] = useState<Agent[] | null>(null);
+  const [usage, setUsage] = useState<Usage | null>(null);
   const [params] = useSearchParams();
   const checkout = params.get("checkout");
 
   useEffect(() => {
     api.listAgents().then(setAgents).catch(() => setAgents([]));
+    api.usage().then(setUsage).catch(() => setUsage(null));
   }, []);
-
-  const total = (agents ?? []).reduce((s, a) => s + a.monthly_cost_cents, 0);
 
   return (
     <>
@@ -54,10 +56,24 @@ export function Dashboard() {
         </div>
       ) : (
         <>
-          <p className="subtle" style={{ marginBottom: "1rem" }}>
-            {agents.length} agent{agents.length > 1 ? "s" : ""} · $
-            {(total / 100).toFixed(2)}/mo total
-          </p>
+          {usage && (
+            <div className="card" style={{ marginBottom: "1.5rem" }}>
+              <div className="row between">
+                <div>
+                  <div className="lbl">This month ({usage.month})</div>
+                  <div style={{ fontSize: "1.6rem", fontWeight: 700 }}>
+                    ${(usage.total_cents / 100).toFixed(2)}
+                  </div>
+                </div>
+                <div className="subtle" style={{ textAlign: "right" }}>
+                  {agents.length} agent{agents.length > 1 ? "s" : ""}
+                  {usage.credit_cents > 0 && (
+                    <div>− ${(usage.credit_cents / 100).toFixed(2)} referral credit</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           <div className="grid cols-3">
             {agents.map((a) => (
               <Link

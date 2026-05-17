@@ -8,17 +8,17 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 2 (Billing & Trust) — in progress. Phase 1 ✅ complete (epics 0–11).
-- **Current epic:** Epic 13 — Usage view (next). Epic 12 (proration) ✅.
+- **Current epic:** Epic 14 — Uptime/trust (next). Epics 12–13 ✅.
 - **Last updated:** 2026-05-17
-- **Local stack:** full app + proration; schema metadata-managed baseline (D19)
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (47 passed, 8 skipped); SPA
+- **Local stack:** full app + proration + usage view
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (49 passed, 8 skipped); SPA
   build ✓; PG migration round-trip ✓
 
 ## Next action
 
-**Epic 13** — `GET /api/billing/usage` (per-agent prorated this-month breakdown −
-referral credit → total) + Dashboard "this month" surface. Then Epic 14
-(uptime), Epic 15 (referrals).
+**Epic 14** — `sample_health` sweep records `provisioner.status` per assigned
+slot into `agent_health_samples`; `uptime_pct(agent, 30d)` on agent detail +
+Dashboard badge. Then Epic 15 (referrals).
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +37,13 @@ referral credit → total) + Dashboard "this month" surface. Then Epic 14
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 13 complete (usage view)
+- `services/usage.compute_usage` (D16: billable filter, prorated-if-started-this-
+  month else full, referral credit floored at subtotal). `routers/billing.py`
+  `GET /api/billing/usage`; Dashboard "This month" card.
+- `test_usage` (unit + endpoint) green; verify 49 passed/8 skipped; SPA ✓.
+- **Next:** Epic 14.
 
 ### 2026-05-17 — Phase 2 started: Epic 12 complete (proration)
 - Phase 2 planned in BUILD_PLAN + DECISIONS D15–D18.

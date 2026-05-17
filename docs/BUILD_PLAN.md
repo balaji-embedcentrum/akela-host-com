@@ -170,10 +170,11 @@ launch.
 
 ## Epic 13 — Usage view ("what you owe this month")
 
-- [ ] **13.1** `GET /api/billing/usage`: per active agent {days_charged,
-  amount_cents}, minus referral credit, → `total_cents` for the current month.
-- [ ] **13.2** Dashboard surfaces "this month" total + per-agent breakdown.
-- *AC:* total = sum(prorated agents) − credit; `test_usage` green.
+- [x] **13.1** `services/usage.compute_usage` (billable filter, prorated if
+  started this month else full, credit floored) + `GET /api/billing/usage`.
+- [x] **13.2** Dashboard "This month" card (total + agent count + credit line).
+- [x] *AC met:* `test_usage` — unit (proration/credit/filtering) + endpoint;
+  verify green (49 passed, 8 skipped); SPA build ✓.
 
 ## Epic 14 — Agent trust / uptime %
 

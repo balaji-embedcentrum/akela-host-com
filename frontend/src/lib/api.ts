@@ -61,6 +61,20 @@ export const api = {
 
   fleetStats: () => req<FleetStats>("/api/fleet/stats"),
 
+  usage: () =>
+    req<{
+      month: string;
+      items: {
+        agent_id: string;
+        display_name: string;
+        days_charged: number;
+        amount_cents: number;
+      }[];
+      subtotal_cents: number;
+      credit_cents: number;
+      total_cents: number;
+    }>("/api/billing/usage"),
+
   listAgents: () => req<Agent[]>("/api/agents"),
   getAgent: (id: string) => req<Agent>(`/api/agents/${id}`),
   checkout: (display_name: string) =>
