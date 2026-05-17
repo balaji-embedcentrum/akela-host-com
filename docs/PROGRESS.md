@@ -8,17 +8,18 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 4 — Billing (next)
+- **Current epic:** Epic 5 — Fleet & slot pool (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots; SPA builds; data layer (PG-verified); auth done
-  (offline login flow); DI layer in place
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (15 passed, 5 skipped)
+- **Local stack:** backend boots; SPA builds; data layer (PG-verified); auth +
+  billing done (checkout→webhook idempotent, offline)
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (22 passed, 7 skipped)
 
 ## Next action
 
-Begin **Epic 4** — `FakeBilling` + `StripeBilling` behind `BillingProvider`;
-`/api/agents/checkout` + webhook endpoint (signature verify + idempotency); event
-handlers wired to provisioning (provisioning lands Epic 6). Then Epic 5 (fleet).
+Begin **Epic 5** — `LocalPgFleet` + `SupabaseFleet` behind `FleetRegistry`
+(get_available/assign/unassign/get_slot/resolve_route/list); atomic slot claim
+(`UPDATE … WHERE status='available'`); concurrency-safe test. Then Epic 6
+(provisioning), Epic 7 wires the rent→deploy orchestration into the paid seam.
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +38,14 @@ handlers wired to provisioning (provisioning lands Epic 6). Then Epic 5 (fleet).
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 4 complete (billing)
+- `FakeBilling` (mock-pay → same handler) + `StripeBilling` (lazy SDK, sig verify).
+- `routers/agents.py` `POST /checkout`; `routers/webhooks.py` stripe webhook +
+  mock-pay shim → one idempotent `services/billing.handle_event` (D13).
+- checkout→paid flow, idempotent re-delivery, bad-sig 400, payment_failed→error.
+- Slot/deploy left as a documented seam for Epic 7 (agent → `paid`).
+- Verified: ruff ✓ mypy ✓ pytest ✓ (22 passed, 7 skipped). **Next:** Epic 5.
 
 ### 2026-05-17 — Epic 3 complete (auth)
 - `security.py` (JWT session + OAuth state + bcrypt api-key helpers);

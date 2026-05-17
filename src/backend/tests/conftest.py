@@ -57,6 +57,14 @@ class Harness:
     settings: Settings
     db: Database
 
+    def login(self) -> None:
+        """Run the offline mock OAuth dance so subsequent requests are authed."""
+        r = self.client.get("/api/auth/login", params={"provider": "mock"}, follow_redirects=False)
+        from urllib.parse import urlparse
+
+        cb = urlparse(r.headers["location"])
+        self.client.get(f"/api/auth/callback?{cb.query}", follow_redirects=False)
+
 
 @pytest_asyncio.fixture
 async def harness(tmp_path, make_settings) -> AsyncIterator[Harness]:

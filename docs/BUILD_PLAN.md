@@ -58,13 +58,15 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 4 — Billing (Stripe abstraction)
 
-- [ ] **4.1** `FakeBilling` + `StripeBilling` behind `BillingProvider`.
-- [ ] **4.2** `/agents/checkout` creates pending agent + checkout; webhook endpoint
-  with signature verify + idempotency (`processed_events`).
-- [ ] **4.3** Handlers: `checkout.session.completed` → provision;
-  `customer.subscription.deleted` / `invoice.payment_failed` → cancel/grace
-  (→ARCHITECTURE §4.2).
-- *AC:* mock checkout drives the real webhook handler end to end.
+- [x] **4.1** `FakeBilling` (in-process, mock-pay→same handler) + `StripeBilling`
+  (lazy SDK, signature verify) behind `BillingProvider`; contract suite green.
+- [x] **4.2** `POST /api/agents/checkout` (auth) creates pending agent + checkout;
+  `POST /api/webhooks/stripe` verifies + is idempotent via `processed_events`.
+- [x] **4.3** `services/billing.handle_event`: `checkout.session.completed` →
+  subscription + agent `paid` (slot/deploy seam for Epic 7);
+  `subscription.deleted` → cancel; `invoice.payment_failed` → agent `error`.
+- [x] *AC met:* `test_billing_webhook` — checkout→mock-pay→paid end to end;
+  re-delivery is a no-op (one subscription); bad signature 400.
 
 ## Epic 5 — Fleet & slot pool
 

@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.config import Settings, get_settings
 from backend.db.models import User
 from backend.db.session import Database
-from backend.providers.base import AuthProvider, EmailProvider
+from backend.providers.base import AuthProvider, BillingProvider, EmailProvider
 from backend.providers.factory import build_provider
 from backend.security import SESSION_COOKIE, read_session
 
@@ -52,6 +52,10 @@ def get_auth(settings: Settings = Depends(get_settings_dep)) -> AuthProvider:
 
 def get_email(settings: Settings = Depends(get_settings_dep)) -> EmailProvider:
     return build_provider("email", settings)
+
+
+def get_billing(settings: Settings = Depends(get_settings_dep)) -> BillingProvider:
+    return build_provider("billing", settings)
 
 
 async def current_user(
