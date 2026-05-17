@@ -94,12 +94,15 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 7 — Agents API
 
-- [ ] **7.1** `POST /agents/checkout`, `GET /agents`, `GET /agents/{id}`
-  (api_key shown once → null), `PATCH` (rename), `POST .../stop|start`,
-  `POST .../cancel`.
-- [ ] **7.2** Dynamic Traefik routing source for `{slot}/(a2a|ws)`
-  (→ARCHITECTURE §4.3).
-- *AC:* rent→deploy→detail→cancel→recycle works end to end via API in local mode.
+- [x] **7.1** `checkout`, `GET /agents`, `GET /agents/{id}` (api_key once→null),
+  `PATCH` rename, `stop`/`start`, `redeploy` (config upload, secrets not stored),
+  `cancel`→recycle. Ownership enforced. `services/provisioning` wires slot-claim
+  + deploy into the billing `paid` seam; failure rolls the slot back.
+- [x] **7.2** `GET /api/routing/traefik` (HTTP-provider) emits live routes per
+  assigned slot from the registry (→ARCHITECTURE §4.3).
+- [x] *AC met:* `test_agents_api` drives rent→deploy→detail(once)→rename→
+  stop/start→redeploy→cancel→recycle (slot returns to pool) via API; routing
+  test green. Verify green (33 passed, 8 skipped).
 
 ## Epic 8 — Frontend
 

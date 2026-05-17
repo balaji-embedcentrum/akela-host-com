@@ -16,7 +16,9 @@ async def _agent(db, agent_id: str) -> Agent:
         return await s.get(Agent, agent_id)
 
 
-def test_checkout_to_paid_end_to_end(harness):
+def test_checkout_to_deployed_end_to_end(harness):
+    """With Epic 7 wired in, mock-pay runs the full path: paid → slot claimed →
+    deployed (FakeProvisioner)."""
     harness.login()
     c = harness.client
 
@@ -29,7 +31,7 @@ def test_checkout_to_paid_end_to_end(harness):
     pay = urlparse(out["checkout_url"])
     r = c.get(f"/api/billing/mock-pay?{pay.query}", follow_redirects=False)
     assert r.status_code == 302
-    assert "checkout=paid" in r.headers["location"]
+    assert "checkout=deployed" in r.headers["location"]
 
 
 async def test_webhook_is_idempotent(harness):
@@ -43,7 +45,7 @@ async def test_webhook_is_idempotent(harness):
     assert "checkout=duplicate" in r2.headers["location"]
 
     agent = await _agent(harness.db, out["agent_id"])
-    assert agent.status == "paid"
+    assert agent.status == "deployed"  # provisioned once; re-delivery is a no-op
     async with harness.db.sessionmaker() as s:
         n = (
             await s.execute(

@@ -7,7 +7,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from functools import lru_cache
 
-from sqlalchemy import text
+from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -35,10 +35,23 @@ class Database:
         self._url = url
         kwargs: dict = {"future": True}
         if _is_sqlite(url):
-            kwargs["connect_args"] = {"check_same_thread": False}
-        self.engine = create_async_engine(url, **kwargs).execution_options(
+            # check_same_thread off (async); generous busy timeout so a second
+            # connection (e.g. the fleet registry) waits instead of erroring.
+            kwargs["connect_args"] = {"check_same_thread": False, "timeout": 30}
+        engine = create_async_engine(url, **kwargs).execution_options(
             schema_translate_map=_schema_map(url)
         )
+        if _is_sqlite(url):
+            # WAL lets a reader/second writer proceed concurrently with the
+            # request transaction — Postgres handles this natively (MVCC).
+            @event.listens_for(engine.sync_engine, "connect")
+            def _wal(dbapi_conn, _rec):  # pragma: no cover - tiny pragma hook
+                cur = dbapi_conn.cursor()
+                cur.execute("PRAGMA journal_mode=WAL")
+                cur.execute("PRAGMA busy_timeout=30000")
+                cur.close()
+
+        self.engine = engine
         self.sessionmaker = async_sessionmaker(self.engine, expire_on_commit=False)
 
     async def create_all(self) -> None:

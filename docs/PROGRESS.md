@@ -8,17 +8,18 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 7 — Agents API + orchestration (next)
+- **Current epic:** Epic 8 — Frontend SPA (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots; SPA builds; auth/billing/fleet/provisioning all
-  done; real Docker deploy lifecycle proven
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (29 passed, 8 skipped)
+- **Local stack:** **backend MVP functionally complete** — rent→deploy→detail→
+  stop/start→redeploy→cancel→recycle end to end via API; Traefik routing source
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (33 passed, 8 skipped)
 
 ## Next action
 
-Begin **Epic 7** — extend `routers/agents.py` (list/detail/rename/stop/start/
-cancel); wire slot-claim + deploy into the billing `paid` seam (rent→deploy);
-api_key shown once then nulled; Traefik dynamic routing source. Then Epic 8 (SPA).
+Begin **Epic 8** — build the themed SPA (bbalaji design tokens already in
+`theme.css`): Landing (pricing + fleet widget), Auth redirect, Dashboard,
+RentAgent, AgentDetail (copy buttons, key-shown-once), Admin; API client + auth
+guard. Then Epic 9 (email), 10 (admin backend), 11 (hardening + full E2E).
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +38,18 @@ api_key shown once then nulled; Traefik dynamic routing source. Then Epic 8 (SPA
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 7 complete (agents API + orchestration + routing)
+- `services/provisioning` (provision_paid_agent / recycle_agent) wired into the
+  billing webhook's `paid` seam; slot rollback on failure.
+- `routers/agents.py`: checkout/list/detail(api_key once)/rename/stop/start/
+  redeploy(config, secrets unstored)/cancel→recycle, ownership-enforced.
+  `routers/routing.py`: Traefik HTTP-provider endpoint.
+- Fix: commit billing state before provisioning (durable de-dup + releases the
+  SQLite single-writer lock so the fleet connection can claim); SQLite WAL +
+  busy_timeout. Updated Epic-4 tests to the now-integrated `deployed` outcome.
+- `FakeProvisioner` test double (no Docker) for API/e2e; harness seeds the pool.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (33 passed, 8 skipped). **Next:** Epic 8.
 
 ### 2026-05-17 — Epic 6 complete (provisioning)
 - `compose.py` (build_env w/ reserved-key guard + render_compose) shared by both

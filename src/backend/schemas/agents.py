@@ -25,13 +25,16 @@ class AgentOut(BaseModel):
     workspace_url: str | None
     monthly_cost_cents: int
     renewal_date: date | None
-    created_at: object  # serialized as ISO by FastAPI
+    # Present ONLY on the detail response, the first time after deploy. Never in
+    # list responses; nulled in the DB once shown (PRD §4.5).
+    api_key: str | None = None
 
 
-class AgentCredentials(BaseModel):
-    """Returned exactly once, right after deploy (api_key shown then nulled)."""
+class RenameIn(BaseModel):
+    display_name: str = Field(min_length=1, max_length=255)
 
-    agent_id: str
-    a2a_url: str | None
-    workspace_url: str | None
-    api_key: str | None
+
+class RedeployIn(BaseModel):
+    # The user's secret env (LLM keys etc.). Passed straight to the provisioner,
+    # NEVER persisted (D12). Optional — agent can run unconfigured.
+    env: dict[str, str] = Field(default_factory=dict)
