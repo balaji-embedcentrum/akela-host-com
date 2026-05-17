@@ -20,12 +20,14 @@ from backend.config import get_settings
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
-    # Lazy import so Epic 0 (no providers yet) still boots; wired from Epic 1 on.
+    # Tolerate not-yet-built impls during incremental dev (a later epic's provider
+    # module may be absent); the app still boots so /health and built routers work.
     try:
+        from backend.providers.base import ProviderError
         from backend.providers.factory import build_providers
 
         app.state.providers = build_providers(settings)
-    except ModuleNotFoundError:
+    except (ModuleNotFoundError, ProviderError):
         app.state.providers = None
     yield
 

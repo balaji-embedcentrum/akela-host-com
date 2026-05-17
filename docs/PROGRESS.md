@@ -8,16 +8,16 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 1 — Provider abstraction layer (next)
+- **Current epic:** Epic 2 — Data layer (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots (FastAPI `/health` 200), SPA builds; Postgres+Traefik
-  compose validated
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (1 test)
+- **Local stack:** backend boots; SPA builds; provider layer in place (factory +
+  ConsoleEmail mock)
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (5 passed, 3 skipped)
 
 ## Next action
 
-Begin **Epic 1** — define the 5 provider interfaces + factory + per-provider contract
-test suite (1.1, 1.2). Then Epic 2 (data layer).
+Begin **Epic 2** — web-app models + fleet schema + Alembic migrations + `make seed`
+(1 fake VPS + N slots + admin user). Then Epic 3 (auth).
 
 ## Needs user (not code-blocking)
 
@@ -36,6 +36,15 @@ test suite (1.1, 1.2). Then Epic 2 (data layer).
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 1 complete (provider abstraction layer)
+- `providers/base.py`: 5 ABCs (Fleet/Billing/Provisioner/Auth/Email) + DTOs +
+  error hierarchy. `providers/factory.py`: `(kind,mode)→impl` registry, lazy
+  import, `build_provider`/`build_providers`.
+- `ConsoleEmail` mock impl (reference) + parametrized contract suite (mock + real
+  skipped w/o creds). `test_architecture.py` guards external-SDK imports.
+- main.lifespan tolerates unbuilt impls (boots with providers=None).
+- Verified: ruff ✓ mypy ✓ pytest ✓ (5 passed, 3 skipped). **Next:** Epic 2.
 
 ### 2026-05-17 — Epic 0 complete (scaffolding & dev loop)
 - pyproject (uv, py3.12), `src/backend/` package (config, FastAPI app factory with

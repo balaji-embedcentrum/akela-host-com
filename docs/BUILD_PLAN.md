@@ -26,12 +26,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 1 — Provider abstraction layer  *(→D1)*
 
-- [ ] **1.1** Define the 5 provider interfaces (`fleet`, `billing`, `provisioner`,
-  `auth`, `email`) + a registry that selects impl from `*_MODE` env.
-- [ ] **1.2** One shared **contract test suite** per provider, parametrized to run
-  against both mock and (skipped-if-no-creds) real impls.
-- *AC:* importing `stripe`/`paramiko`/`supabase` anywhere outside `providers/`
-  fails a lint/architecture test.
+- [x] **1.1** 5 provider ABCs + DTOs (`providers/base.py`); factory with
+  `(kind,mode)→impl` registry, lazy import so unbuilt epics don't break boot.
+- [x] **1.2** Contract-test harness established (parametrized over `mock` +
+  skip-if-no-creds `real`); **ConsoleEmail** reference impl + its contract suite
+  prove the pattern end-to-end. Per-provider suites land with each epic.
+- [x] *AC met:* `tests/test_architecture.py` fails the build if
+  stripe/paramiko/supabase/resend/docker is imported outside `providers/`.
 
 ## Epic 2 — Data layer
 
