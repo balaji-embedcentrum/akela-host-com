@@ -8,16 +8,17 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 2 — Data layer (next)
+- **Current epic:** Epic 3 — Auth (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots; SPA builds; provider layer in place (factory +
-  ConsoleEmail mock)
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (5 passed, 3 skipped)
+- **Local stack:** backend boots; SPA builds; provider layer in place; data layer
+  done — Alembic + seed verified on real Postgres
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (10 passed, 3 skipped;
+  PG migration test runs when TEST_DATABASE_URL set / in CI)
 
 ## Next action
 
-Begin **Epic 2** — web-app models + fleet schema + Alembic migrations + `make seed`
-(1 fake VPS + N slots + admin user). Then Epic 3 (auth).
+Begin **Epic 3** — `MockOAuth` + `SupabaseAuth` behind `AuthProvider`; `/auth/login`,
+`/auth/callback`, session JWT cookie, user upsert, roles. Then Epic 4 (billing).
 
 ## Needs user (not code-blocking)
 
@@ -36,6 +37,19 @@ Begin **Epic 2** — web-app models + fleet schema + Alembic migrations + `make 
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 2 complete (data layer)
+- Web models (users/agents/subscriptions/processed_events) + fleet models
+  (vps_servers/agent_slots/vps_ssh_keys, `fleet` schema). `Database` helper:
+  one engine, SQLite collapses `fleet` via schema_translate_map → zero-dep tests.
+- Alembic (async env) + initial migration via metadata.create_all (zero drift).
+  `make seed` (idempotent: 1 VPS + N slots + admin). SQLite tests + **real PG
+  round-trip** green.
+- Fixes: env.py `engine.begin()` (was `connect()` → DDL never committed);
+  Makefile CLI targets use `PYTHONPATH=src` (project not pip-installed);
+  `lazy="selectin"` on relationships (async MissingGreenlet); CI gains a
+  postgres service for the migration test.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (10 passed, 3 skipped). **Next:** Epic 3.
 
 ### 2026-05-17 — Epic 1 complete (provider abstraction layer)
 - `providers/base.py`: 5 ABCs (Fleet/Billing/Provisioner/Auth/Email) + DTOs +

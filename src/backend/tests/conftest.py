@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
 
 import pytest
+import pytest_asyncio
 
 from backend.config import Settings
+from backend.db.session import Database
 
 
 @pytest.fixture
@@ -33,6 +35,18 @@ def make_settings(tmp_path) -> Callable[..., Settings]:
 @pytest.fixture
 def settings(make_settings) -> Settings:
     return make_settings()
+
+
+@pytest_asyncio.fixture
+async def db(tmp_path) -> AsyncIterator[Database]:
+    """File-backed SQLite Database with both metadatas created (fleet schema
+    translated to main). Hermetic — no Postgres/Docker needed."""
+    database = Database(f"sqlite+aiosqlite:///{tmp_path / 'test.db'}")
+    await database.create_all()
+    try:
+        yield database
+    finally:
+        await database.dispose()
 
 
 def has_env(*names: str) -> bool:

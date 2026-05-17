@@ -8,6 +8,21 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: akela
+          POSTGRES_PASSWORD: akela
+          POSTGRES_DB: akela_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U akela"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      # Mock mode for the app; this DB only exercises the Alembic round-trip test.
+      TEST_DATABASE_URL: postgresql+asyncpg://akela:akela@localhost:5432/akela_test
     steps:
       - uses: actions/checkout@v4
 
@@ -20,7 +35,7 @@ jobs:
       - name: Install backend deps
         run: uv sync --extra dev
 
-      - name: Lint + typecheck + test (mock mode, zero external accounts)
+      - name: Lint + typecheck + test (mock mode; PG only for migration round-trip)
         run: |
           uv run ruff check src
           uv run ruff format --check src

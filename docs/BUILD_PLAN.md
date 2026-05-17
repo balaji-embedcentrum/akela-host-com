@@ -36,12 +36,15 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 2 — Data layer
 
-- [ ] **2.1** Web-app models + Alembic migration: `users`, `agents`,
-  `subscriptions`, `processed_events` (PRD §5.4 + idempotency table).
-- [ ] **2.2** Fleet registry schema (separate Postgres schema for local): `vps_servers`,
-  `agent_slots`, `ssh_keys`. Atomic slot-claim query (→ARCHITECTURE §7).
-- [ ] **2.3** `make seed`: 1 fake VPS + N available slots; one admin user.
-- *AC:* migrations up/down clean; seed produces a rentable pool.
+- [x] **2.1** Web-app models (`users` provider+ext_id, `agents`, `subscriptions`,
+  `processed_events`) — SQLAlchemy 2.0, selectin relationships.
+- [x] **2.2** Fleet schema models (`vps_servers`, `agent_slots`, `vps_ssh_keys`)
+  in `fleet` schema; SQLite collapses it via schema_translate_map (zero-dep tests).
+  Atomic slot-claim query implemented in Epic 5's LocalPgFleet.
+- [x] **2.3** `make seed` — 1 fake VPS + N slots + admin user; idempotent.
+- [x] *AC met:* SQLite model/seed tests green; **real-Postgres** Alembic up→down
+  round-trip green (test_migrations, runs in CI w/ postgres service); `make
+  migrate && make seed` verified against dev Postgres (10 slots + admin).
 
 ## Epic 3 — Auth (Supabase Auth abstraction)  *(→D1)*
 

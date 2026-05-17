@@ -4,6 +4,8 @@
 .DEFAULT_GOAL := help
 UV ?= uv
 COMPOSE ?= docker compose -f infra/docker-compose.dev.yml
+# The project isn't pip-installed (src layout); CLI entrypoints need src on path.
+PY ?= PYTHONPATH=src $(UV) run
 
 .PHONY: help
 help: ## List all targets
@@ -43,15 +45,15 @@ db-up: ## Start only Postgres (for local runs/tests against PG)
 
 .PHONY: migrate
 migrate: ## Apply DB migrations (web-app + fleet schema)
-	$(UV) run alembic upgrade head
+	$(PY) python -m alembic upgrade head
 
 .PHONY: seed
 seed: ## Seed: 1 fake VPS + N available slots + an admin user
-	$(UV) run python -m backend.scripts.seed
+	$(PY) python -m backend.scripts.seed
 
 .PHONY: api
 api: ## Run the FastAPI backend (mock mode)
-	$(UV) run uvicorn backend.main:app --reload --port 8000 --app-dir src
+	$(PY) uvicorn backend.main:app --reload --port 8000 --app-dir src
 
 .PHONY: web
 web: ## Run the React SPA dev server
