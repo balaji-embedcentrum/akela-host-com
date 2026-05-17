@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     app_base_url: str = "http://localhost:8000"
     frontend_base_url: str = "http://localhost:5173"
     agents_domain: str = "agents.akela-host.com"
-    jwt_secret: str = "dev-only-change-me"
+    jwt_secret: str = "dev-only-change-me-min-32-bytes-please"
     session_cookie_secure: bool = False
 
     # Web-app database

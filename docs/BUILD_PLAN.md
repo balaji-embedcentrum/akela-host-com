@@ -48,11 +48,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 3 — Auth (Supabase Auth abstraction)  *(→D1)*
 
-- [ ] **3.1** `MockOAuth` + `SupabaseAuth` behind `AuthProvider`; deterministic
-  identity in mock.
-- [ ] **3.2** `/auth/login`, `/auth/callback`, session JWT in HttpOnly cookie,
-  user upsert, `user`/`admin` roles.
-- *AC:* full login→session→logout works offline via mock; contract test green.
+- [x] **3.1** `MockOAuth` (deterministic, offline) + `SupabaseAuth` (lazy SDK,
+  credential-gated) behind `AuthProvider`; contract suite green.
+- [x] **3.2** `/api/auth/{login,callback,logout,me}`; JWT session in HttpOnly
+  cookie (`security.py`); user upsert on (provider,ext_id); `current_user` /
+  `require_admin` deps; open-redirect-safe. DI layer (`dependencies.py`) added.
+- [x] *AC met:* `test_auth_flow` drives login→callback→me→logout fully offline;
+  forged-state rejected; verify green (15 passed, 5 skipped).
 
 ## Epic 4 — Billing (Stripe abstraction)
 

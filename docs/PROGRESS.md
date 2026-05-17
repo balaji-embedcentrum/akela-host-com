@@ -8,17 +8,17 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 3 — Auth (next)
+- **Current epic:** Epic 4 — Billing (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots; SPA builds; provider layer in place; data layer
-  done — Alembic + seed verified on real Postgres
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (10 passed, 3 skipped;
-  PG migration test runs when TEST_DATABASE_URL set / in CI)
+- **Local stack:** backend boots; SPA builds; data layer (PG-verified); auth done
+  (offline login flow); DI layer in place
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (15 passed, 5 skipped)
 
 ## Next action
 
-Begin **Epic 3** — `MockOAuth` + `SupabaseAuth` behind `AuthProvider`; `/auth/login`,
-`/auth/callback`, session JWT cookie, user upsert, roles. Then Epic 4 (billing).
+Begin **Epic 4** — `FakeBilling` + `StripeBilling` behind `BillingProvider`;
+`/api/agents/checkout` + webhook endpoint (signature verify + idempotency); event
+handlers wired to provisioning (provisioning lands Epic 6). Then Epic 5 (fleet).
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +37,16 @@ Begin **Epic 3** — `MockOAuth` + `SupabaseAuth` behind `AuthProvider`; `/auth/
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 3 complete (auth)
+- `security.py` (JWT session + OAuth state + bcrypt api-key helpers);
+  `MockOAuth` (offline, deterministic) + `SupabaseAuth` (lazy SDK).
+- `dependencies.py` DI: settings/db/providers/current_user/require_admin —
+  test-overridable (sqlite + mock). `routers/auth.py`: login/callback/logout/me,
+  HttpOnly cookie, user upsert, open-redirect guard.
+- `harness` test fixture (wired app over sqlite+mock). Offline login→session→
+  logout flow + forged-state test green.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (15 passed, 5 skipped). **Next:** Epic 4.
 
 ### 2026-05-17 — Epic 2 complete (data layer)
 - Web models (users/agents/subscriptions/processed_events) + fleet models
