@@ -128,9 +128,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 10 — Admin panel
 
-- [ ] **10.1** System overview (slots total/available/assigned/error), per-VPS
-  health, per-agent table, force stop/restart/wipe/recycle, users list.
-- *AC:* admin-only; can recycle any agent.
+- [x] **10.1** `routers/admin.py` (router-level `require_admin`): `/overview`
+  (slot status rollup + counts), `/vps` (per-VPS derived health), `/agents`
+  (all, with owner), `/users` (with agent counts), `/agents/{id}/{action}`
+  (stop/start/restart/wipe/recycle on ANY agent). SPA Admin page expanded
+  (overview cards + agents/users tables + action buttons).
+- [x] *AC met:* `test_admin` — non-admin 403; admin sees overview/agents/users/
+  vps; force-recycle any agent returns its slot to the pool. Verify green (39
+  passed, 8 skipped); SPA build ✓.
 
 ## Epic 11 — Hardening & E2E
 

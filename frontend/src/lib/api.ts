@@ -81,6 +81,34 @@ export const api = {
       body: JSON.stringify({ env }),
     }),
   cancel: (id: string) => req<Agent>(`/api/agents/${id}/cancel`, { method: "POST" }),
+
+  admin: {
+    overview: () =>
+      req<{
+        slots: {
+          total: number;
+          available: number;
+          assigned: number;
+          recycling: number;
+          error: number;
+        };
+        users: number;
+        agents: number;
+      }>("/api/admin/overview"),
+    agents: () =>
+      req<
+        { id: string; display_name: string; status: string; slot_name: string | null; owner: string }[]
+      >("/api/admin/agents"),
+    users: () =>
+      req<
+        { id: string; email: string; username: string; is_admin: boolean; agents: number }[]
+      >("/api/admin/users"),
+    action: (id: string, action: string) =>
+      req<{ id: string; status: string; action: string }>(
+        `/api/admin/agents/${id}/${action}`,
+        { method: "POST" },
+      ),
+  },
 };
 
 export { ApiError };

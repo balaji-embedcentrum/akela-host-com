@@ -8,18 +8,17 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 10 — Admin panel (next)
+- **Current epic:** Epic 11 — Hardening & E2E (final)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend MVP + SPA + lifecycle emails complete
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (36 passed, 8 skipped); SPA
+- **Local stack:** backend + SPA + emails + admin complete
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (39 passed, 8 skipped); SPA
   build ✓
 
 ## Next action
 
-Begin **Epic 10** — admin backend (`/api/admin/*`: system overview, per-VPS
-health, per-agent table, force stop/restart/wipe/recycle, users list),
-`require_admin`-gated; expand the SPA Admin page. Then Epic 11 (recycle sweep,
-rate limiting, README, full E2E).
+Begin **Epic 11** — renewal/grace + recycle scheduled sweep, rate limiting on
+auth+rent, orphan consistency check, full E2E happy-path test, README quickstart,
+fill ToS placeholders if provided. Then Phase 1 MVP is done.
 
 ## Needs user (not code-blocking)
 
@@ -38,6 +37,14 @@ rate limiting, README, full E2E).
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 10 complete (admin panel)
+- `routers/admin.py` (router-level `require_admin`): overview, per-VPS rollup,
+  all-agents (w/ owner), users (w/ counts), force stop/start/restart/wipe/recycle
+  on any agent. SPA Admin expanded (cards + agents/users tables + actions).
+- `test_admin`: non-admin 403; admin overview/agents/users/vps; force-recycle
+  any agent frees the slot. Verified: ruff ✓ mypy ✓ pytest ✓ (39 passed, 8
+  skipped); SPA build ✓. **Next:** Epic 11.
 
 ### 2026-05-17 — Epic 9 complete (email notifications)
 - `email_templates` (shared subjects/bodies, safe render); `email_console`
