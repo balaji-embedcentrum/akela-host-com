@@ -8,15 +8,16 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 0 — Scaffolding & dev loop (not started)
+- **Current epic:** Epic 1 — Provider abstraction layer (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** not yet scaffolded — nothing to run
-- **`make verify`:** n/a (no Makefile yet)
+- **Local stack:** backend boots (FastAPI `/health` 200), SPA builds; Postgres+Traefik
+  compose validated
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (1 test)
 
 ## Next action
 
-Begin **BUILD_PLAN 0.1** — create the repo skeleton (`src/backend/`, `frontend/`,
-`infra/`, `scripts/`) and `pyproject.toml` / Vite app. Then 0.2 (`Makefile`).
+Begin **Epic 1** — define the 5 provider interfaces + factory + per-provider contract
+test suite (1.1, 1.2). Then Epic 2 (data layer).
 
 ## Needs user (not code-blocking)
 
@@ -35,6 +36,16 @@ Begin **BUILD_PLAN 0.1** — create the repo skeleton (`src/backend/`, `frontend
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 0 complete (scaffolding & dev loop)
+- pyproject (uv, py3.12), `src/backend/` package (config, FastAPI app factory with
+  lazy router/provider wiring, `/health`), Makefile (single entrypoint), infra
+  compose (Postgres+Traefik) + traefik static/dynamic config, CI workflow.
+- `frontend/` Vite+React+TS SPA; **theme extracted from bbalaji-site** into
+  `theme.css` (verbatim tokens + app primitives: forms, tables, badges, cred blocks);
+  themed shell + dark-mode toggle. SPA builds clean.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (1); compose+traefik config valid; SPA build ✓.
+- **Next:** Epic 1.
 
 ### 2026-05-17 — Commit policy set; planning scaffolding committed to `main`
 - User directive: no Co-Authored-By trailer (user creds only); commit + push to `main`

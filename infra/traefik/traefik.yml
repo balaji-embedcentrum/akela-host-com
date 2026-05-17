@@ -1,0 +1,15 @@
+# Static Traefik config. Per-slot routes are written to ./dynamic/ by the
+# routing source (see docs/ARCHITECTURE.md §4.3 / §5.3) — a VPS swap is a
+# dynamic-file rewrite, no Traefik restart.
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+api:
+  dashboard: true
+  insecure: true

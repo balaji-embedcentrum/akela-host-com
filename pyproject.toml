@@ -1,0 +1,68 @@
+[project]
+name = "akela-host"
+version = "0.1.0"
+description = "Multi-tenant SaaS hosting platform for renting persistent Hermes AI agents"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "alembic>=1.14",
+    "asyncpg>=0.30",
+    "aiosqlite>=0.20",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.6",
+    "pyjwt>=2.10",
+    "bcrypt>=4.2",
+    "httpx>=0.28",
+    "python-multipart>=0.0.12",
+    "itsdangerous>=2.2",
+]
+
+[project.optional-dependencies]
+# Real-mode SDKs — only needed when a provider's *_MODE=real. Lazy-imported
+# inside the real impls so mock mode never pulls them in.
+real = [
+    "stripe>=11.0",
+    "paramiko>=3.5",
+    "supabase>=2.10",
+    "resend>=2.4",
+]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "docker>=7.1",
+]
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/backend"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "RUF"]
+ignore = ["B008"]  # FastAPI Depends() in defaults is idiomatic
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["src/backend/tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+mypy_path = "src"

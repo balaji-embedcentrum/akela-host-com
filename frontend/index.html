@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Akela Host — Rent persistent Hermes AI agents for $4/mo</title>
+    <meta
+      name="description"
+      content="Rent persistent, fully-owned Hermes AI agents for $4/month. Connect them to your own self-hosted Akela AI."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230f172a'/><text x='32' y='44' font-family='ui-sans-serif,system-ui' font-size='34' font-weight='800' text-anchor='middle' fill='%23fafaf9'>A</text></svg>"
+    />
+    <script>
+      // Set theme before paint to avoid flash (mirrors bbalaji-site behavior).
+      (function () {
+        try {
+          var s = localStorage.getItem("theme");
+          var d = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.setAttribute("data-theme", s || (d ? "dark" : "light"));
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

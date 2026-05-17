@@ -25,6 +25,7 @@ venv/
 # ── Node / frontend ──
 node_modules/
 frontend/dist/
+*.tsbuildinfo
 .vite/
 
 # ── OS / editor junk ──

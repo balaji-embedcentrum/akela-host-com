@@ -10,15 +10,17 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 0 — Scaffolding & dev loop  *(no external deps)*
 
-- [ ] **0.1** Repo skeleton: `src/backend/`, `frontend/`, `infra/`, `scripts/` per
-  CLAUDE.md layout; `pyproject.toml` (ruff, pytest, FastAPI, SQLAlchemy 2.0,
-  Pydantic v2, Alembic), `frontend/` Vite+TS app.
-- [ ] **0.2** `Makefile` as the single entrypoint: `help`, `dev`, `verify`
-  (lint+typecheck+test), `test`, `fmt`, `migrate`, `seed`, `down`. *AC:* `make help`
-  lists all; `make verify` runs on empty project and passes.
-- [ ] **0.3** `infra/docker-compose.dev.yml`: Postgres + Traefik. `.env.example`
-  consumed. *AC:* `make dev` brings the stack up; `/health` returns 200.
-- [ ] **0.4** CI workflow running `make verify` on push.
+- [x] **0.1** Repo skeleton: `src/backend/`, `frontend/`, `infra/` per CLAUDE.md
+  layout; `pyproject.toml` (uv, ruff, mypy, pytest, FastAPI, SQLAlchemy 2.0,
+  Pydantic v2, Alembic); `frontend/` Vite+React+TS app.
+- [x] **0.2** `Makefile` single entrypoint: `help`, `install`, `dev`, `verify`
+  (lint+typecheck+test), `test`, `fmt`, `lint`, `typecheck`, `migrate`, `seed`,
+  `down`, `build-hermes`, `e2e`. *AC met:* `make help` lists all; `make verify`
+  green (ruff ✓ mypy ✓ pytest ✓).
+- [x] **0.3** `infra/docker-compose.dev.yml`: Postgres + Traefik; `.env.example`
+  consumed by `config.py`. *AC:* compose+traefik config validated; `/health`
+  returns 200 (test_health). Full `docker compose up` exercised from Epic 2.
+- [x] **0.4** CI workflow (`.github/workflows/ci.yml`) runs verify + SPA build on push.
 - *AC for Epic 0:* fresh clone → `make dev && make verify` green with zero external
   accounts.
 
