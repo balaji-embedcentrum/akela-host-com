@@ -8,18 +8,17 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 6 — Provisioning (next)
+- **Current epic:** Epic 7 — Agents API + orchestration (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots; SPA builds; data layer (PG-verified); auth,
-  billing, fleet+pool done (atomic claim, concurrency-proven)
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (25 passed, 8 skipped)
+- **Local stack:** backend boots; SPA builds; auth/billing/fleet/provisioning all
+  done; real Docker deploy lifecycle proven
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (29 passed, 8 skipped)
 
 ## Next action
 
-Begin **Epic 6** — `LocalDockerProvisioner` + `SshProvisioner` behind
-`AgentProvisioner`; render the §5 per-slot compose; deploy/stop/start/recycle/
-status; user `.env` root-only, never persisted (D12); deploy/recycle scripts.
-Then Epic 7 (agents API + rent→deploy orchestration).
+Begin **Epic 7** — extend `routers/agents.py` (list/detail/rename/stop/start/
+cancel); wire slot-claim + deploy into the billing `paid` seam (rent→deploy);
+api_key shown once then nulled; Traefik dynamic routing source. Then Epic 8 (SPA).
 
 ## Needs user (not code-blocking)
 
@@ -38,6 +37,14 @@ Then Epic 7 (agents API + rent→deploy orchestration).
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 6 complete (provisioning)
+- `compose.py` (build_env w/ reserved-key guard + render_compose) shared by both
+  provisioners. `LocalDockerProvisioner` (real Docker SDK, off-loop blocking
+  ops, health poll), `SshProvisioner` (paramiko, gated). Lifecycle scripts.
+- Stand-in test image (`infra/test-agent`) emulates the hermes contract; real
+  container deploy→health→stop/start→recycle→wipe verified; offline render tests.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (29 passed, 8 skipped). **Next:** Epic 7.
 
 ### 2026-05-17 — Epic 5 complete (fleet & slot pool)
 - `LocalPgFleet` (atomic claim via UPDATE…RETURNING) + `SupabaseFleet` (edge-fn,

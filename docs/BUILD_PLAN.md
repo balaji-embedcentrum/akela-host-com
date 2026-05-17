@@ -81,14 +81,16 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 6 — Provisioning
 
-- [ ] **6.1** `LocalDockerProvisioner` + `SshProvisioner` behind
-  `AgentProvisioner`; render the §5 compose template.
-- [ ] **6.2** `scripts/{deploy-agent,recycle-agent,wipe-data}.sh`; user `.env`
-  written root-only, never persisted (→D12).
-- [ ] **6.3** Lifecycle: `deploy/stop/start/recycle/stats`; failure rolls back the
-  slot assignment (→ARCHITECTURE §4.1).
-- *AC:* in local mode, deploy spins a real `hermes-adapter` container; `/health` on
-  8766 responds; recycle wipes volumes and frees the slot.
+- [x] **6.1** `LocalDockerProvisioner` (real Docker SDK, blocking ops off-loop)
+  + `SshProvisioner` (paramiko, gated); shared `compose.py` (build_env +
+  render_compose); user env can't override reserved contract keys.
+- [x] **6.2** `scripts/{deploy-agent,recycle-agent,wipe-data}.sh`; SSH writes a
+  chmod-600 `.env` (secrets never in any DB — D12); local injects env directly.
+- [x] **6.3** `deploy/stop/start/recycle/status`; deploy failure raises
+  `ProviderError` so the orchestrator rolls back the slot (Epic 7 §4.1).
+- [x] *AC met:* `test_provisioner` spins a **real container** (stand-in image,
+  prod swaps hermes via `HERMES_ADAPTER_IMAGE`), `/health` polled green, recycle
+  wipes volumes + removes container; `test_compose` covers rendering offline.
 
 ## Epic 7 — Agents API
 
