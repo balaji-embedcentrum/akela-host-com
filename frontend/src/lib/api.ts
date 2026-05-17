@@ -18,6 +18,7 @@ export interface Agent {
   workspace_url: string | null;
   monthly_cost_cents: number;
   renewal_date: string | null;
+  uptime_pct: number | null;
   api_key: string | null;
 }
 

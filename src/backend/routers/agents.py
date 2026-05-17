@@ -33,6 +33,7 @@ from backend.schemas.agents import AgentOut, CheckoutIn, CheckoutOut, RedeployIn
 from backend.services import notifications
 from backend.services.proration import first_period_cents
 from backend.services.provisioning import recycle_agent
+from backend.services.uptime import uptime_pct
 
 router = APIRouter(prefix="/api/agents", tags=["agents"])
 
@@ -80,8 +81,8 @@ async def create_checkout(
 @router.get("", response_model=list[AgentOut])
 async def list_agents(
     user: User = Depends(current_user), session: AsyncSession = Depends(db_session)
-) -> list[Agent]:
-    rows = (
+) -> list[AgentOut]:
+    rows = list(
         (
             await session.execute(
                 select(Agent).where(Agent.user_id == user.id).order_by(Agent.created_at)
@@ -90,7 +91,13 @@ async def list_agents(
         .scalars()
         .all()
     )
-    return list(rows)
+    up = await uptime_pct(session, [a.id for a in rows])
+    out: list[AgentOut] = []
+    for a in rows:
+        o = AgentOut.model_validate(a)
+        o.uptime_pct = up.get(a.id)
+        out.append(o)
+    return out
 
 
 @router.get("/{agent_id}", response_model=AgentOut)
@@ -101,6 +108,7 @@ async def get_agent(
 ) -> AgentOut:
     agent = await _owned(agent_id, user, session)
     out = AgentOut.model_validate(agent)
+    out.uptime_pct = (await uptime_pct(session, [agent.id])).get(agent.id)
     if agent.api_key_plain:  # shown exactly once, then nulled (PRD §4.5)
         out.api_key = agent.api_key_plain
         agent.api_key_plain = None

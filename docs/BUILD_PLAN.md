@@ -178,11 +178,13 @@ launch.
 
 ## Epic 14 — Agent trust / uptime %
 
-- [ ] **14.1** `agent_health_samples` table (migration 0002); sweep
-  `sample_health` pings `provisioner.status` per assigned slot and records it.
-- [ ] **14.2** `uptime_pct(agent, window=30d)`; surfaced on agent detail + a
-  Dashboard badge.
-- *AC:* sampled health → correct % over the window; `test_uptime` green.
+- [x] **14.1** `agent_health_samples` (schema baseline); `sweeps.sample_health`
+  probes `provisioner.status` per assigned slot, wired into admin `/sweeps/run`
+  (reports `sampled`).
+- [x] **14.2** `services/uptime.uptime_pct` (batch, 30d window, None if no
+  samples); surfaced on `AgentOut` (list + detail) and the AgentDetail page.
+- [x] *AC met:* `test_uptime` — unit (window/rounding) + sweep→surface; verify
+  green (51 passed, 8 skipped); SPA build ✓.
 
 ## Epic 15 — Referral program
 

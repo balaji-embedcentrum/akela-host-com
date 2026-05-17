@@ -26,6 +26,8 @@ class AgentOut(BaseModel):
     workspace_url: str | None
     monthly_cost_cents: int
     renewal_date: date | None
+    # Trailing-30d uptime % (D17); None until the first health sample.
+    uptime_pct: float | None = None
     # Present ONLY on the detail response, the first time after deploy. Never in
     # list responses; nulled in the DB once shown (PRD §4.5).
     api_key: str | None = None

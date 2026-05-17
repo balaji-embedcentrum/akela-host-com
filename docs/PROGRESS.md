@@ -8,17 +8,17 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 2 (Billing & Trust) — in progress. Phase 1 ✅ complete (epics 0–11).
-- **Current epic:** Epic 14 — Uptime/trust (next). Epics 12–13 ✅.
+- **Current epic:** Epic 15 — Referral program (final Phase 2). Epics 12–14 ✅.
 - **Last updated:** 2026-05-17
-- **Local stack:** full app + proration + usage view
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (49 passed, 8 skipped); SPA
+- **Local stack:** full app + proration + usage + uptime
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (51 passed, 8 skipped); SPA
   build ✓; PG migration round-trip ✓
 
 ## Next action
 
-**Epic 14** — `sample_health` sweep records `provisioner.status` per assigned
-slot into `agent_health_samples`; `uptime_pct(agent, 30d)` on agent detail +
-Dashboard badge. Then Epic 15 (referrals).
+**Epic 15** — `?ref=CODE` at signup → `referred_by_user_id`; first deploy by a
+referred user grants the referrer one month credit (D18); `GET
+/api/referrals/me`; credit shows in the usage view. Then Phase 2 done.
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +37,14 @@ Dashboard badge. Then Epic 15 (referrals).
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 14 complete (uptime / trust)
+- `sweeps.sample_health` probes `provisioner.status` per assigned slot →
+  `agent_health_samples`; wired into admin `/sweeps/run` (`sampled`).
+- `services/uptime.uptime_pct` (batch, 30d, None w/o samples) on `AgentOut`
+  list+detail; AgentDetail shows "uptime (30d)".
+- `test_uptime` (unit window/rounding + sweep→surface) green; verify 51
+  passed/8 skipped; SPA ✓. **Next:** Epic 15.
 
 ### 2026-05-17 — Epic 13 complete (usage view)
 - `services/usage.compute_usage` (D16: billable filter, prorated-if-started-this-

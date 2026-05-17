@@ -13,7 +13,7 @@ from datetime import date, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.db.models import Agent, User
+from backend.db.models import Agent, AgentHealthSample, User
 from backend.providers.base import AgentProvisioner, EmailProvider, FleetRegistry, SlotStatus
 from backend.services import notifications
 from backend.services.provisioning import recycle_agent
@@ -94,3 +94,23 @@ async def find_orphans(session: AsyncSession, *, fleet: FleetRegistry) -> dict[s
             a.id for a in live_agents if a.slot_name and a.slot_name not in assigned
         ),
     }
+
+
+async def sample_health(
+    session: AsyncSession, *, fleet: FleetRegistry, provisioner: AgentProvisioner
+) -> int:
+    """Probe each assigned slot and record one health sample per live agent
+    (feeds uptime %, D17). Returns the number of samples written."""
+    n = 0
+    for slot in await fleet.list_slots(SlotStatus.assigned):
+        agent = (
+            await session.execute(
+                select(Agent).where(Agent.slot_name == slot.slot_name, Agent.status.in_(_LIVE))
+            )
+        ).scalar_one_or_none()
+        if agent is None:
+            continue
+        st = await provisioner.status(slot)
+        session.add(AgentHealthSample(agent_id=agent.id, healthy=bool(st.running)))
+        n += 1
+    return n

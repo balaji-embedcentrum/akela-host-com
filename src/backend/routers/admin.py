@@ -122,8 +122,14 @@ async def run_sweeps(
     """Manually run the maintenance sweeps (normally cron-driven)."""
     recycled = await sweeps.recycle_due(session, fleet=fleet, provisioner=provisioner, email=email)
     reminded = await sweeps.renewal_reminders(session, email=email)
+    sampled = await sweeps.sample_health(session, fleet=fleet, provisioner=provisioner)
     orphans = await sweeps.find_orphans(session, fleet=fleet)
-    return {"recycled": recycled, "reminded": reminded, "orphans": orphans}
+    return {
+        "recycled": recycled,
+        "reminded": reminded,
+        "sampled": sampled,
+        "orphans": orphans,
+    }
 
 
 @router.post("/agents/{agent_id}/{action}")

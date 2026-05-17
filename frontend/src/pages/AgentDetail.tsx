@@ -116,6 +116,8 @@ export function AgentDetail() {
         <p className="subtle">
           ${(agent.monthly_cost_cents / 100).toFixed(2)}/mo
           {agent.renewal_date ? ` · renews ${agent.renewal_date}` : ""}
+          {" · uptime (30d): "}
+          {agent.uptime_pct == null ? "—" : `${agent.uptime_pct}%`}
         </p>
         <div className="row" style={{ gap: "0.6rem", flexWrap: "wrap" }}>
           <button
