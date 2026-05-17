@@ -25,14 +25,14 @@ Phase 1 MVP is done. Options: (a) fill ToS placeholders + graduate one concern t
 
 - Real Supabase / Stripe / GitHub+Google OAuth / VPS SSH credentials — only when a
   concern graduates from `mock` to `real` (post-MVP). Dev needs none.
-- ToS placeholders in `docs/terms-of-service.md`: `[DATE]`,
-  `[YOUR JURISDICTION]`, `[YOUR EMAIL]` (→D11). Needed before real payments.
-- Confirm `hermes-adapter:latest` image is built/available locally for Epic 6
-  (or we add a `make build-hermes` that builds it from the local repo).
+- ✅ ToS placeholders filled 2026-05-17 (Michigan, USA · May 1 2026 ·
+  info@akela-host.com → D11). Still recommend a Michigan attorney review pre-launch.
+- `hermes-adapter:latest` — `make build-hermes` builds it from the local repo;
+  tests use a stand-in image so this isn't blocking.
 
 ## Open / watch
 
-- D7, D8, D9, D10, D11 are provisional (⏳) — revisit before launch.
+- D7, D8, D9, D10 are provisional (⏳) — revisit before launch.
 - hermes-adapter has a built-in fleet mode (D8) — evaluate reuse after MVP.
 
 ---

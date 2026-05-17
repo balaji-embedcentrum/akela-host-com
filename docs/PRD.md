@@ -456,7 +456,7 @@ Both ports mapped via Traefik to `agents.akela-host.com/{slot_name}/a2a` and `/w
 
 # Terms of Service
 
-**Effective Date:** [DATE]  
+**Effective Date:** May 1, 2026  
 **Akela Host ("we", "us", "our")**
 
 By accessing or using akela-host.com ("the Service"), you ("you", "your", "User") agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the Service.
@@ -552,12 +552,12 @@ You agree not to use the Service to:
 
 ### 15. Governing Law
 
-- These Terms are governed by the laws of [YOUR JURISDICTION]. Any disputes shall be resolved in the courts of [YOUR JURISDICTION].
+- These Terms are governed by the laws of the State of Michigan, USA. Any disputes shall be resolved in the state or federal courts located in the State of Michigan, USA.
 
 ### 16. Contact
 
-For questions about these Terms, contact: [YOUR EMAIL]
+For questions about these Terms, contact: info@akela-host.com
 
 ---
 
-*This is a template. Replace bracketed fields `[DATE]`, `[YOUR JURISDICTION]`, `[YOUR EMAIL]` before use. This template is not legal advice.*
+*Effective date, jurisdiction (Michigan, USA) and contact filled in 2026-05-17. Not legal advice — have a Michigan-licensed attorney review before relying on it in production.*

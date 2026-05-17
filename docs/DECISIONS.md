@@ -72,11 +72,12 @@ Resolves PRD open-question 2. Default 3 GB per slot's data; enforcement
 **Why:** quota plumbing isn't on the critical path to a working rent flow; record
 the number now so it isn't re-debated.
 
-### D11 — ToS legal placeholders deferred to user ⏳
-`[DATE]`, `[YOUR JURISDICTION]`, `[YOUR EMAIL]` in `docs/terms-of-service.md` are
-not code-blocking and require the user/legal. Tracked in PROGRESS "Needs user".
-**Why:** must be correct before taking real payments, but mock billing needs none
-of it.
+### D11 — ToS legal placeholders ✅ (resolved 2026-05-17)
+Filled by the user: Effective Date **May 1, 2026**, governing law **State of
+Michigan, USA**, contact **info@akela-host.com** — applied to
+`docs/terms-of-service.md` and the PRD §8 copy.
+**Why:** needed before real payments. Still flagged in the doc as requiring a
+Michigan-licensed attorney's review before production reliance (not code-blocking).
 
 ### D12 — Secrets never persisted; on-host root-only `.env` is the mechanism ✅
 hermes needs process env, so the provisioner writes a `chmod 600` `.env` on the
