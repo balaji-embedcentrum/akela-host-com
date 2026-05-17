@@ -7,19 +7,18 @@ Append-only state. Newest entry on top. At the start of every session read the
 
 ## Status
 
-- **Phase:** 1 (MVP) — ✅ **COMPLETE** (all 12 epics, 0–11)
-- **Current epic:** —
+- **Phase:** 2 (Billing & Trust) — in progress. Phase 1 ✅ complete (epics 0–11).
+- **Current epic:** Epic 13 — Usage view (next). Epic 12 (proration) ✅.
 - **Last updated:** 2026-05-17
-- **Local stack:** full app — backend + themed SPA + emails + admin + sweeps +
-  rate limiting; runs with zero external accounts
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (45 passed, 8 skipped); SPA
-  build ✓; real-Docker provisioner + PG migration tests pass when available
+- **Local stack:** full app + proration; schema metadata-managed baseline (D19)
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (47 passed, 8 skipped); SPA
+  build ✓; PG migration round-trip ✓
 
 ## Next action
 
-Phase 1 MVP is done. Options: (a) fill ToS placeholders + graduate one concern to
-`real` mode (Stripe/Supabase/OAuth/VPS) per "Needs user"; (b) start Phase 2 (PRD
-§ roadmap): proration, usage view, uptime display. Nothing is code-blocked.
+**Epic 13** — `GET /api/billing/usage` (per-agent prorated this-month breakdown −
+referral credit → total) + Dashboard "this month" surface. Then Epic 14
+(uptime), Epic 15 (referrals).
 
 ## Needs user (not code-blocking)
 
@@ -38,6 +37,17 @@ Phase 1 MVP is done. Options: (a) fill ToS placeholders + graduate one concern t
 ---
 
 ## Log
+
+### 2026-05-17 — Phase 2 started: Epic 12 complete (proration)
+- Phase 2 planned in BUILD_PLAN + DECISIONS D15–D18.
+- `services/proration` (D15); `Subscription.first_period_cents`; `User`
+  referral fields + `AgentHealthSample` model added to the schema baseline.
+- **D19**: dropped the incremental `0002` — pre-launch the schema is
+  metadata-managed via the single `0001` create_all baseline (an additive
+  migration collided with create_all's current-model materialization). PG
+  migration test hard-resets + asserts Phase-2 tables; round-trip ✓.
+- `test_proration` green; verify 47 passed, 8 skipped; SPA build ✓.
+- **Next:** Epic 13.
 
 ### 2026-05-17 — Epic 11 complete → Phase 1 MVP DONE
 - `services/sweeps` (recycle_due / renewal_reminders / find_orphans) + admin

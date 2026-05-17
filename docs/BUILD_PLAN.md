@@ -152,6 +152,49 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ---
 
+# Phase 2 — Billing & Trust  *(PRD §6 roadmap; in progress)*
+
+Same rules: provider abstraction intact, mock-mode runnable with zero accounts,
+test + commit per epic. New schema lands in the metadata-managed baseline
+migration (D19) — incremental migrations begin once the baseline is frozen at
+launch.
+
+## Epic 12 — Proration
+
+- [x] **12.1** `services/proration.first_period_cents` (calendar-day, round
+  half-up, full month on the 1st — D15); `Subscription.first_period_cents`.
+- [x] **12.2** `CheckoutOut.first_period_cents` returned at checkout; stored on
+  the subscription at `checkout.session.completed`. SPA `api.ts` type updated.
+- [x] *AC met:* `test_proration` — formula cases + checkout/subscription carry
+  the prorated amount. Verify green (47 passed, 8 skipped); PG migration ✓.
+
+## Epic 13 — Usage view ("what you owe this month")
+
+- [ ] **13.1** `GET /api/billing/usage`: per active agent {days_charged,
+  amount_cents}, minus referral credit, → `total_cents` for the current month.
+- [ ] **13.2** Dashboard surfaces "this month" total + per-agent breakdown.
+- *AC:* total = sum(prorated agents) − credit; `test_usage` green.
+
+## Epic 14 — Agent trust / uptime %
+
+- [ ] **14.1** `agent_health_samples` table (migration 0002); sweep
+  `sample_health` pings `provisioner.status` per assigned slot and records it.
+- [ ] **14.2** `uptime_pct(agent, window=30d)`; surfaced on agent detail + a
+  Dashboard badge.
+- *AC:* sampled health → correct % over the window; `test_uptime` green.
+
+## Epic 15 — Referral program
+
+- [ ] **15.1** `User.referral_code` (unique, auto), `referred_by_user_id`,
+  `credit_cents` (migration 0002). `?ref=CODE` captured at signup.
+- [ ] **15.2** First successful deploy by a referred user → referrer earns one
+  month credit ($4). `GET /api/referrals/me` (code + count + earned). Credit is
+  applied in the usage view (Epic 13).
+- *AC:* referred signup + deploy grants exactly one credit; self-referral
+  rejected; `test_referrals` green.
+
+---
+
 ## Out of scope for Phase 1 (PRD §6)
 
 Hermes Studio, hosting Akela AI, price tiers, non-Stripe payment, mobile, usage

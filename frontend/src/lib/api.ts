@@ -64,10 +64,10 @@ export const api = {
   listAgents: () => req<Agent[]>("/api/agents"),
   getAgent: (id: string) => req<Agent>(`/api/agents/${id}`),
   checkout: (display_name: string) =>
-    req<{ agent_id: string; checkout_url: string }>("/api/agents/checkout", {
-      method: "POST",
-      body: JSON.stringify({ display_name }),
-    }),
+    req<{ agent_id: string; checkout_url: string; first_period_cents: number }>(
+      "/api/agents/checkout",
+      { method: "POST", body: JSON.stringify({ display_name }) },
+    ),
   rename: (id: string, display_name: string) =>
     req<Agent>(`/api/agents/${id}`, {
       method: "PATCH",

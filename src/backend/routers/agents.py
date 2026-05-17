@@ -4,6 +4,8 @@ every per-agent route (docs/ARCHITECTURE.md §5)."""
 
 from __future__ import annotations
 
+from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,6 +31,7 @@ from backend.providers.base import (
 from backend.ratelimit import RateLimit
 from backend.schemas.agents import AgentOut, CheckoutIn, CheckoutOut, RedeployIn, RenameIn
 from backend.services import notifications
+from backend.services.proration import first_period_cents
 from backend.services.provisioning import recycle_agent
 
 router = APIRouter(prefix="/api/agents", tags=["agents"])
@@ -67,7 +70,11 @@ async def create_checkout(
         success_url=f"{settings.frontend_base_url}/dashboard?checkout=success",
         cancel_url=f"{settings.frontend_base_url}/dashboard?checkout=cancel",
     )
-    return CheckoutOut(agent_id=agent.id, checkout_url=cs.url)
+    return CheckoutOut(
+        agent_id=agent.id,
+        checkout_url=cs.url,
+        first_period_cents=first_period_cents(agent.monthly_cost_cents, date.today()),
+    )
 
 
 @router.get("", response_model=list[AgentOut])

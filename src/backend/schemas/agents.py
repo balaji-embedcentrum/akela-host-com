@@ -12,6 +12,7 @@ class CheckoutIn(BaseModel):
 class CheckoutOut(BaseModel):
     agent_id: str
     checkout_url: str
+    first_period_cents: int  # prorated charge for the current month (D15)
 
 
 class AgentOut(BaseModel):

@@ -13,7 +13,7 @@ import asyncio
 import os
 
 import pytest
-from sqlalchemy import inspect
+from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from backend.config import get_settings
@@ -33,6 +33,18 @@ async def _table_names(url: str, schema: str | None = None) -> list[str]:
         await engine.dispose()
 
 
+async def _hard_reset(url: str) -> None:
+    """Guarantee a pristine DB regardless of prior (possibly dirty) state."""
+    engine = create_async_engine(url)
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text("DROP SCHEMA public CASCADE"))
+            await conn.execute(text("CREATE SCHEMA public"))
+            await conn.execute(text("DROP SCHEMA IF EXISTS fleet CASCADE"))
+    finally:
+        await engine.dispose()
+
+
 def test_migration_upgrade_then_downgrade(monkeypatch):
     from alembic import command
     from alembic.config import Config
@@ -41,20 +53,18 @@ def test_migration_upgrade_then_downgrade(monkeypatch):
     get_settings.cache_clear()
     cfg = Config("alembic.ini")
 
-    # Self-clean: a prior failed run may have left tables at head.
-    try:
-        command.downgrade(cfg, "base")
-    except Exception:
-        pass
+    # Pristine slate — robust to any prior dirty state.
+    asyncio.run(_hard_reset(TEST_DB))
 
-    command.upgrade(cfg, "head")
+    command.upgrade(cfg, "head")  # metadata baseline (D19)
     public = asyncio.run(_table_names(TEST_DB))
     fleet = asyncio.run(_table_names(TEST_DB, schema="fleet"))
     assert {"users", "agents", "subscriptions", "processed_events"} <= set(public)
+    assert "agent_health_samples" in public  # Phase 2 schema present
     assert {"agent_slots", "vps_servers", "vps_ssh_keys"} <= set(fleet)
 
     command.downgrade(cfg, "base")
     public_after = asyncio.run(_table_names(TEST_DB))
-    assert "users" not in public_after and "agents" not in public_after
+    assert "users" not in public_after and "agent_health_samples" not in public_after
 
     get_settings.cache_clear()

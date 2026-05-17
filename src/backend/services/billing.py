@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db.models import Agent, ProcessedEvent, Subscription
 from backend.providers.base import BillingEvent, BillingEventType
+from backend.services.proration import first_period_cents
 
 DUPLICATE = "duplicate"
 
@@ -53,6 +54,7 @@ async def _on_checkout_completed(event: BillingEvent, session: AsyncSession) -> 
             status="active",
             current_period_start=today,
             current_period_end=period_end,
+            first_period_cents=first_period_cents(agent.monthly_cost_cents, today),
         )
     )
     agent.billing_period_start = today

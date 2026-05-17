@@ -100,3 +100,43 @@ BUILD_PLAN task or meaningful chunk), working directly on `main` (no feature bra
 unless the user asks). Never commit secrets.
 **Why:** explicit user directive — keep authorship clean and ensure nothing is lost on
 local disk between sessions. Overrides the default harness commit conventions.
+
+### D15 — Proration formula: calendar-day, round half-up ✅
+First-period charge = round(monthly_cents × remaining_days / days_in_month), where
+remaining_days counts the rent day through month end. Rent on the 1st = full month.
+**Why:** matches the ToS §3 "pay only for the remaining days" wording; deterministic
+and trivially testable. StripeBilling delegates to Stripe's native proration; the
+formula is the mock + the displayed estimate.
+
+### D16 — Usage = live recompute, not a ledger ✅
+"What you owe this month" is computed on read (sum of each active agent's prorated
+amount for the current calendar month, minus referral credit). No invoices table in
+Phase 2.
+**Why:** Stripe remains the billing source of truth; a local ledger would duplicate
+and drift. A real invoices/credits ledger is a Phase 3 concern if needed.
+
+### D17 — Uptime = sampled health over a 30-day trailing window ✅
+A sweep samples `provisioner.status` per assigned slot into `agent_health_samples`;
+uptime% = healthy_samples / total_samples over the last 30 days (—" if no samples).
+**Why:** no agent-side push needed; reuses the existing provisioner status call and
+the sweep mechanism. Sampling cadence is a deployment/cron concern.
+
+### D18 — Referral reward: one month credit, single-grant, no self-referral ✅
+A referred user's **first successful deploy** grants the referrer 400¢ credit (one
+month). Self-referral rejected; credit granted at most once per referred user.
+Credit is consumed by the usage view (Epic 13), not paid out.
+**Why:** abuse-resistant and simple; ties the reward to a real conversion (deploy),
+not just signup. Cash payout / multi-tier is out of scope.
+
+### D19 — Pre-launch schema is metadata-managed (single baseline migration) ✅
+Supersedes the implied "incremental 0002" plan. There is no deployed database yet,
+so the schema is owned by the ORM metadata: one migration (`0001`) is
+`create_all`/`drop_all` of the current models (Phase 1 + 2). Tests/fresh installs
+use `create_all`; the PG round-trip test validates this migration up/down. **At
+launch** `0001` is frozen as the baseline and every subsequent change ships as a
+real incremental migration.
+**Why:** hand-written duplicate DDL across many tables drifts from the models and
+adds no value while there are zero production rows to preserve. A 2nd migration
+that `add_column`s what `0001`'s `create_all` already made (current models)
+collides — the additive-migration model only applies once the baseline is frozen.
+Reversible: freezing the baseline at launch is a one-time, well-understood step.
