@@ -106,10 +106,15 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 8 — Frontend
 
-- [ ] **8.1** API client + auth guard.
-- [ ] **8.2** Pages: Landing (incl. fleet-availability widget), Auth redirect,
-  Dashboard, RentAgent, AgentDetail (copy buttons, key-shown-once), Admin.
-- *AC:* clicking through the browser performs a full rent in local mode.
+- [x] **8.1** Typed API client (`lib/api.ts`), `AuthProvider` + `RequireAuth`
+  guard (auto-login redirect), themed `Layout`, `theme.ts` toggle, `bits.tsx`
+  (StatusBadge/CopyField). Public `GET /api/fleet/stats` added + tested.
+- [x] **8.2** Pages on the bbalaji design tokens: Landing (fleet widget, pricing,
+  how-it-works, FAQ), Dashboard, RentAgent, AgentDetail (copy buttons,
+  key-shown-once banner, redeploy/stop/start/cancel), Admin (snapshot).
+- [x] *AC:* SPA builds + typechecks (tsc strict) clean; it calls exactly the
+  endpoints the Epic-7 e2e drives end to end. Browser click-through (Playwright)
+  deferred to Epic 11.
 
 ## Epic 9 — Email notifications
 

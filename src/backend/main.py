@@ -54,7 +54,7 @@ def create_app() -> FastAPI:
         ("backend.routers.agents", "router"),
         ("backend.routers.admin", "router"),
         ("backend.routers.webhooks", "router"),
-        ("backend.routers.fleet_mock", "router"),
+        ("backend.routers.fleet", "router"),
         ("backend.routers.routing", "router"),
     ):
         try:

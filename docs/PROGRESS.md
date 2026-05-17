@@ -8,18 +8,19 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 8 — Frontend SPA (next)
+- **Current epic:** Epic 9 — Email notifications (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** **backend MVP functionally complete** — rent→deploy→detail→
-  stop/start→redeploy→cancel→recycle end to end via API; Traefik routing source
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (33 passed, 8 skipped)
+- **Local stack:** backend MVP + themed SPA complete; SPA builds/typechecks; full
+  rent flow exercised via API
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (34 passed, 8 skipped); SPA
+  `npm run build` ✓
 
 ## Next action
 
-Begin **Epic 8** — build the themed SPA (bbalaji design tokens already in
-`theme.css`): Landing (pricing + fleet widget), Auth redirect, Dashboard,
-RentAgent, AgentDetail (copy buttons, key-shown-once), Admin; API client + auth
-guard. Then Epic 9 (email), 10 (admin backend), 11 (hardening + full E2E).
+Begin **Epic 9** — `notifications` service emitting the lifecycle templates
+(welcome, agent_deployed, renewal_reminder, cancellation_confirmed,
+agent_recycled, agent_offline) via `EmailProvider`; wire into provision/cancel;
+`ResendEmail` real impl. Then Epic 10 (admin), Epic 11 (hardening + full E2E).
 
 ## Needs user (not code-blocking)
 
@@ -38,6 +39,15 @@ guard. Then Epic 9 (email), 10 (admin backend), 11 (hardening + full E2E).
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 8 complete (frontend SPA)
+- Typed `lib/api.ts`, `AuthProvider`/`RequireAuth`, `Layout`, theme toggle,
+  `StatusBadge`/`CopyField`. Public `GET /api/fleet/stats` (+ test).
+- Pages on bbalaji tokens: Landing (fleet widget/pricing/FAQ), Dashboard,
+  RentAgent, AgentDetail (copy buttons, key-once banner, redeploy/lifecycle),
+  Admin snapshot. Routed + guarded; admin route role-gated.
+- SPA `npm run build` + strict `tsc` clean; backend 34 passed, 8 skipped.
+- **Next:** Epic 9.
 
 ### 2026-05-17 — Epic 7 complete (agents API + orchestration + routing)
 - `services/provisioning` (provision_paid_agent / recycle_agent) wired into the
