@@ -139,12 +139,16 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 11 — Hardening & E2E
 
-- [ ] **11.1** End-to-end local happy-path test (anon→login→rent→deploy→connect
-  stub→cancel→recycle) in CI.
-- [ ] **11.2** Consistency sweep (orphan slot/agent), renewal/grace scheduled job,
-  rate limiting, input validation.
-- [ ] **11.3** `README.md` quickstart; fill ToS placeholders if user provided them.
-- *AC:* `make verify` + E2E green from a clean clone with zero external accounts.
+- [x] **11.1** `test_e2e.py` — anon→login→rent→deploy→connect-info→routable→
+  cancel→recycle + lifecycle emails, one test (`make e2e`); runs in CI.
+- [x] **11.2** `services/sweeps` (recycle_due, renewal_reminders, find_orphans)
+  + admin `/sweeps/run` trigger; in-process `RateLimit` on login(50/m) +
+  checkout(30/m); input validation via Pydantic schemas. Tests: `test_sweeps`,
+  `test_ratelimit`.
+- [x] **11.3** `README.md` quickstart written. ToS placeholders left for the
+  user (tracked in PROGRESS "Needs user"; not code-blocking).
+- [x] *AC met:* `make verify` green (45 passed, 8 skipped) + SPA build, from a
+  clean clone with zero external accounts.
 
 ---
 

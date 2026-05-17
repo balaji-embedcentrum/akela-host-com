@@ -26,6 +26,7 @@ from backend.providers.base import (
     FleetRegistry,
     ProviderError,
 )
+from backend.ratelimit import RateLimit
 from backend.schemas.agents import AgentOut, CheckoutIn, CheckoutOut, RedeployIn, RenameIn
 from backend.services import notifications
 from backend.services.provisioning import recycle_agent
@@ -40,7 +41,11 @@ async def _owned(agent_id: str, user: User, session: AsyncSession) -> Agent:
     return agent
 
 
-@router.post("/checkout", response_model=CheckoutOut)
+@router.post(
+    "/checkout",
+    response_model=CheckoutOut,
+    dependencies=[Depends(RateLimit("checkout", 30))],
+)
 async def create_checkout(
     payload: CheckoutIn,
     user: User = Depends(current_user),

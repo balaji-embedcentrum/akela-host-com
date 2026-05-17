@@ -11,8 +11,20 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.db.models import Agent, User
-from backend.dependencies import db_session, get_fleet, get_provisioner, require_admin
-from backend.providers.base import AgentProvisioner, FleetRegistry, ProviderError
+from backend.dependencies import (
+    db_session,
+    get_email,
+    get_fleet,
+    get_provisioner,
+    require_admin,
+)
+from backend.providers.base import (
+    AgentProvisioner,
+    EmailProvider,
+    FleetRegistry,
+    ProviderError,
+)
+from backend.services import sweeps
 from backend.services.provisioning import recycle_agent
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
@@ -98,6 +110,20 @@ async def all_users(session: AsyncSession = Depends(db_session)) -> list[dict]:
         }
         for u, n in rows
     ]
+
+
+@router.post("/sweeps/run")
+async def run_sweeps(
+    session: AsyncSession = Depends(db_session),
+    fleet: FleetRegistry = Depends(get_fleet),
+    provisioner: AgentProvisioner = Depends(get_provisioner),
+    email: EmailProvider = Depends(get_email),
+) -> dict:
+    """Manually run the maintenance sweeps (normally cron-driven)."""
+    recycled = await sweeps.recycle_due(session, fleet=fleet, provisioner=provisioner, email=email)
+    reminded = await sweeps.renewal_reminders(session, email=email)
+    orphans = await sweeps.find_orphans(session, fleet=fleet)
+    return {"recycled": recycled, "reminded": reminded, "orphans": orphans}
 
 
 @router.post("/agents/{agent_id}/{action}")

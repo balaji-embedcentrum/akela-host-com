@@ -7,18 +7,19 @@ Append-only state. Newest entry on top. At the start of every session read the
 
 ## Status
 
-- **Phase:** 1 (MVP)
-- **Current epic:** Epic 11 — Hardening & E2E (final)
+- **Phase:** 1 (MVP) — ✅ **COMPLETE** (all 12 epics, 0–11)
+- **Current epic:** —
 - **Last updated:** 2026-05-17
-- **Local stack:** backend + SPA + emails + admin complete
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (39 passed, 8 skipped); SPA
-  build ✓
+- **Local stack:** full app — backend + themed SPA + emails + admin + sweeps +
+  rate limiting; runs with zero external accounts
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (45 passed, 8 skipped); SPA
+  build ✓; real-Docker provisioner + PG migration tests pass when available
 
 ## Next action
 
-Begin **Epic 11** — renewal/grace + recycle scheduled sweep, rate limiting on
-auth+rent, orphan consistency check, full E2E happy-path test, README quickstart,
-fill ToS placeholders if provided. Then Phase 1 MVP is done.
+Phase 1 MVP is done. Options: (a) fill ToS placeholders + graduate one concern to
+`real` mode (Stripe/Supabase/OAuth/VPS) per "Needs user"; (b) start Phase 2 (PRD
+§ roadmap): proration, usage view, uptime display. Nothing is code-blocked.
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +38,14 @@ fill ToS placeholders if provided. Then Phase 1 MVP is done.
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 11 complete → Phase 1 MVP DONE
+- `services/sweeps` (recycle_due / renewal_reminders / find_orphans) + admin
+  `/sweeps/run`. In-process `RateLimit` on login + checkout. `test_e2e` (full
+  anon→recycle happy path, `make e2e`), `test_sweeps`, `test_ratelimit`.
+- `README.md` quickstart. ToS placeholders deferred to user (not code-blocking).
+- Final: ruff ✓ mypy ✓ pytest ✓ (45 passed, 8 skipped) + SPA build ✓.
+- **All 12 epics committed + pushed to `origin/main`.** Phase 1 complete.
 
 ### 2026-05-17 — Epic 10 complete (admin panel)
 - `routers/admin.py` (router-level `require_admin`): overview, per-VPS rollup,

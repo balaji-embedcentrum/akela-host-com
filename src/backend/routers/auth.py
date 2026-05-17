@@ -13,6 +13,7 @@ from backend.config import Settings
 from backend.db.models import User
 from backend.dependencies import current_user, db_session, get_auth, get_settings_dep
 from backend.providers.base import AuthProvider
+from backend.ratelimit import RateLimit
 from backend.schemas.auth import UserOut
 from backend.security import SESSION_COOKIE, issue_session, issue_state, read_state
 
@@ -26,7 +27,7 @@ def _safe_redirect(path: str) -> str:
     return path if path.startswith("/") and not path.startswith("//") else "/dashboard"
 
 
-@router.get("/login")
+@router.get("/login", dependencies=[Depends(RateLimit("login", 50))])
 async def login(
     request: Request,
     provider: str = Query("mock"),
