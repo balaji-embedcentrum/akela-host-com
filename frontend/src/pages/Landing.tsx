@@ -11,7 +11,8 @@ export function Landing() {
     api.fleetStats().then(setFleet).catch(() => setFleet(null));
   }, []);
 
-  const cta = user ? "/dashboard" : api.loginUrl("mock");
+  const ref = new URLSearchParams(window.location.search).get("ref") || undefined;
+  const cta = user ? "/dashboard" : api.loginUrl("mock", "/dashboard", ref);
 
   return (
     <>

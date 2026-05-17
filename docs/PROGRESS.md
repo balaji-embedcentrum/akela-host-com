@@ -7,18 +7,18 @@ Append-only state. Newest entry on top. At the start of every session read the
 
 ## Status
 
-- **Phase:** 2 (Billing & Trust) — in progress. Phase 1 ✅ complete (epics 0–11).
-- **Current epic:** Epic 15 — Referral program (final Phase 2). Epics 12–14 ✅.
+- **Phase:** 2 (Billing & Trust) — ✅ **COMPLETE** (epics 12–15). Phase 1 ✅.
+- **Current epic:** —
 - **Last updated:** 2026-05-17
-- **Local stack:** full app + proration + usage + uptime
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (51 passed, 8 skipped); SPA
+- **Local stack:** full app + proration + usage + uptime + referrals
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (54 passed, 8 skipped); SPA
   build ✓; PG migration round-trip ✓
 
 ## Next action
 
-**Epic 15** — `?ref=CODE` at signup → `referred_by_user_id`; first deploy by a
-referred user grants the referrer one month credit (D18); `GET
-/api/referrals/me`; credit shows in the usage view. Then Phase 2 done.
+Phases 1 + 2 done. Options: (a) graduate a concern to `real` mode per "Needs
+user"; (b) Phase 3 (PRD roadmap): multi-VPS spread, agent marketplace, usage
+analytics, WebSocket live status. Nothing code-blocked.
 
 ## Needs user (not code-blocking)
 
@@ -37,6 +37,15 @@ referred user grants the referrer one month credit (D18); `GET
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 15 complete → Phase 2 DONE
+- Referral code/attribution: `?ref` carried in OAuth state, set on user creation
+  (valid other user only). First deploy (n_agents==1) grants referrer one month
+  credit — single-grant, self-referral guarded. `GET /api/referrals/me`; credit
+  consumed by the usage view. SPA: Landing forwards `?ref`, Dashboard card.
+- `test_referrals` (attribution, single grant, no-double, unknown/self safe).
+- Verified: ruff ✓ mypy ✓ pytest ✓ (54 passed, 8 skipped); SPA build ✓.
+- **Phases 1 + 2 complete; all 16 epics committed + pushed to origin/main.**
 
 ### 2026-05-17 — Epic 14 complete (uptime / trust)
 - `sweeps.sample_health` probes `provisioner.status` per assigned slot →

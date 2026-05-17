@@ -5,14 +5,17 @@ import { type Agent, api } from "../lib/api";
 import { StatusBadge } from "../components/bits";
 
 type Usage = Awaited<ReturnType<typeof api.usage>>;
+type Referral = Awaited<ReturnType<typeof api.referral>>;
 
 export function Dashboard() {
   const [agents, setAgents] = useState<Agent[] | null>(null);
   const [usage, setUsage] = useState<Usage | null>(null);
+  const [ref, setRef] = useState<Referral | null>(null);
   const [params] = useSearchParams();
   const checkout = params.get("checkout");
 
   useEffect(() => {
+    api.referral().then(setRef).catch(() => setRef(null));
     api.listAgents().then(setAgents).catch(() => setAgents([]));
     api.usage().then(setUsage).catch(() => setUsage(null));
   }, []);
@@ -40,6 +43,30 @@ export function Dashboard() {
           {checkout === "deployed"
             ? "Payment received — your agent is being deployed."
             : `Checkout: ${checkout}`}
+        </div>
+      )}
+
+      {ref && (
+        <div className="card" style={{ marginBottom: "1.5rem" }}>
+          <div className="lbl">Refer &amp; earn</div>
+          <p className="subtle" style={{ margin: "0.3rem 0 0.6rem" }}>
+            Share your link — you get one free month ($4 credit) when a referred
+            user deploys their first agent. {ref.referred_count} referred · $
+            {(ref.earned_cents / 100).toFixed(2)} earned.
+          </p>
+          <div className="cred">
+            <code>{`${window.location.origin}/?ref=${ref.code}`}</code>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() =>
+                navigator.clipboard?.writeText(
+                  `${window.location.origin}/?ref=${ref.code}`,
+                )
+              }
+            >
+              Copy
+            </button>
+          </div>
         </div>
       )}
 

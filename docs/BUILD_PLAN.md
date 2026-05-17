@@ -188,13 +188,20 @@ launch.
 
 ## Epic 15 — Referral program
 
-- [ ] **15.1** `User.referral_code` (unique, auto), `referred_by_user_id`,
-  `credit_cents` (migration 0002). `?ref=CODE` captured at signup.
-- [ ] **15.2** First successful deploy by a referred user → referrer earns one
-  month credit ($4). `GET /api/referrals/me` (code + count + earned). Credit is
-  applied in the usage view (Epic 13).
-- *AC:* referred signup + deploy grants exactly one credit; self-referral
-  rejected; `test_referrals` green.
+- [x] **15.1** `User.referral_code`/`referred_by_user_id`/`credit_cents` (schema
+  baseline). `?ref=CODE` carried through the OAuth state, attributed at user
+  creation (valid *other* user only).
+- [x] **15.2** First deploy by a referred user (n_agents==1) → referrer
+  +`monthly_cost_cents` credit, single-grant, self-referral guarded.
+  `GET /api/referrals/me`; credit consumed by the usage view (Epic 13). SPA:
+  Landing carries `?ref`, Dashboard "Refer & earn" card.
+- [x] *AC met:* `test_referrals` — attribution + single grant + no double grant
+  + unknown/self-code safe. Verify green (54 passed, 8 skipped); SPA build ✓.
+
+---
+
+**Phase 2 complete** (epics 12–15). Phase 3 (PRD roadmap): multi-VPS fleet
+spread, agent marketplace, usage analytics, WebSocket live status.
 
 ---
 

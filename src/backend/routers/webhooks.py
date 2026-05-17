@@ -77,6 +77,13 @@ async def _finalize(
             ).scalar_one()
             if n_agents == 1:
                 await notifications.send_welcome(email, to=user.email, username=user.username)
+                # First successful deploy by a referred user → referrer earns one
+                # month (D18). n_agents==1 makes this a single grant per user;
+                # self-referral is impossible (set from another user at signup).
+                if user.referred_by_user_id and user.referred_by_user_id != user.id:
+                    referrer = await session.get(User, user.referred_by_user_id)
+                    if referrer is not None:
+                        referrer.credit_cents += agent.monthly_cost_cents
             await notifications.send_agent_deployed(email, to=user.email, agent=agent)
     return status
 

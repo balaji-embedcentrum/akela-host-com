@@ -40,12 +40,13 @@ def read_session(secret: str, token: str) -> dict[str, Any]:
     return claims
 
 
-def issue_state(secret: str, *, redirect: str, provider: str) -> str:
+def issue_state(secret: str, *, redirect: str, provider: str, ref: str | None = None) -> str:
     now = datetime.now(UTC)
     return jwt.encode(
         {
             "redirect": redirect,
             "provider": provider,
+            "ref": ref or "",
             "nonce": secrets.token_urlsafe(8),
             "iat": now,
             "exp": now + _STATE_TTL,

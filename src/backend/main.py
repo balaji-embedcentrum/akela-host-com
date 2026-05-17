@@ -55,6 +55,7 @@ def create_app() -> FastAPI:
         ("backend.routers.admin", "router"),
         ("backend.routers.webhooks", "router"),
         ("backend.routers.billing", "router"),
+        ("backend.routers.referrals", "router"),
         ("backend.routers.fleet", "router"),
         ("backend.routers.routing", "router"),
     ):

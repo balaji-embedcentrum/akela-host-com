@@ -32,12 +32,18 @@ async def login(
     request: Request,
     provider: str = Query("mock"),
     redirect: str = Query("/dashboard"),
+    ref: str = Query(""),
     settings: Settings = Depends(get_settings_dep),
     auth: AuthProvider = Depends(get_auth),
 ) -> RedirectResponse:
     if provider not in _ALLOWED_PROVIDERS:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "unsupported provider")
-    state = issue_state(settings.jwt_secret, redirect=_safe_redirect(redirect), provider=provider)
+    state = issue_state(
+        settings.jwt_secret,
+        redirect=_safe_redirect(redirect),
+        provider=provider,
+        ref=ref or None,
+    )
     redirect_uri = f"{settings.app_base_url}/api/auth/callback"
     url = auth.authorize_url(provider=provider, state=state, redirect_uri=redirect_uri)
     return RedirectResponse(url, status_code=status.HTTP_302_FOUND)
@@ -74,6 +80,14 @@ async def callback(
             email=identity.email,
             username=identity.username,
         )
+        # Referral attribution (D18): only at creation, only a valid *other* user.
+        ref_code = (st.get("ref") or "").strip()
+        if ref_code:
+            referrer = (
+                await session.execute(select(User).where(User.referral_code == ref_code))
+            ).scalar_one_or_none()
+            if referrer is not None:
+                user.referred_by_user_id = referrer.id
         session.add(user)
         await session.flush()
     else:  # keep profile fresh; never downgrade is_admin here

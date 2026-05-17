@@ -55,9 +55,14 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  loginUrl: (provider: string, redirect = "/dashboard") =>
-    `/api/auth/login?provider=${provider}&redirect=${encodeURIComponent(redirect)}`,
+  loginUrl: (provider: string, redirect = "/dashboard", ref?: string) =>
+    `/api/auth/login?provider=${provider}&redirect=${encodeURIComponent(redirect)}` +
+    (ref ? `&ref=${encodeURIComponent(ref)}` : ""),
   me: () => req<User>("/api/auth/me"),
+  referral: () =>
+    req<{ code: string; referred_count: number; earned_cents: number }>(
+      "/api/referrals/me",
+    ),
   logout: () => req<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
 
   fleetStats: () => req<FleetStats>("/api/fleet/stats"),

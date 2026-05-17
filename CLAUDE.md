@@ -16,11 +16,11 @@ Authoritative product spec: `docs/PRD.md`. This file is the *how*; the PRD is th
 
 ## Current state
 
-**Phase 1 MVP complete** (all 12 epics, 0–11) — FastAPI backend + themed React
-SPA + lifecycle emails + admin + sweeps, runnable locally with zero external
-accounts (`make verify` / `make e2e` green). See `docs/PROGRESS.md` for live
-state and what's next; the build was executed task-by-task from
-`docs/BUILD_PLAN.md`.
+**Phases 1 + 2 complete** (epics 0–15) — FastAPI backend + themed React SPA +
+lifecycle emails + admin + sweeps, plus proration, usage view, uptime % and
+referrals. Runs locally with zero external accounts (`make verify` / `make e2e`
+green). See `docs/PROGRESS.md` for live state and what's next; the build was
+executed task-by-task from `docs/BUILD_PLAN.md`.
 
 ## The three non-obvious things
 
