@@ -1,0 +1,33 @@
+# ── Secrets — NEVER commit (this project's whole premise is secrets-never-persisted) ──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+
+# ── Local-first dev artifacts (see docs/ARCHITECTURE.md §6) ──
+.dev/
+.localfleet/
+.mail/
+*-sink.jsonl
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# ── Node / frontend ──
+node_modules/
+frontend/dist/
+.vite/
+
+# ── OS / editor junk ──
+.DS_Store
+*.swp
+.idea/
