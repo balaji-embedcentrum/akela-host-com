@@ -5,6 +5,7 @@ schema is created and used as-is (docs/ARCHITECTURE.md §6)."""
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from functools import lru_cache
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
@@ -57,21 +58,20 @@ class Database:
         await self.engine.dispose()
 
 
-_db: Database | None = None
+@lru_cache(maxsize=8)
+def get_database_for(url: str) -> Database:
+    """One Database (engine) per URL — shared by the DI layer and providers so
+    we don't spin a new engine per request."""
+    return Database(url)
 
 
 def get_db(settings: Settings | None = None) -> Database:
-    """Process-wide Database singleton (built from settings on first use)."""
-    global _db
-    if _db is None:
-        _db = Database((settings or get_settings()).database_url)
-    return _db
+    return get_database_for((settings or get_settings()).database_url)
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
     """FastAPI dependency: a transactional session per request."""
-    db = get_db()
-    async with db.sessionmaker() as session:
+    async with get_db().sessionmaker() as session:
         try:
             yield session
             await session.commit()

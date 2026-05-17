@@ -87,5 +87,19 @@ async def harness(tmp_path, make_settings) -> AsyncIterator[Harness]:
     await database.dispose()
 
 
+@pytest_asyncio.fixture
+async def seeded_pool(tmp_path, make_settings) -> Settings:
+    """Settings whose DB has a seeded fleet pool (1 VPS + N available slots)."""
+    from backend.db.session import get_database_for
+    from backend.scripts.seed import seed
+
+    url = f"sqlite+aiosqlite:///{tmp_path / 'pool.db'}"
+    settings = make_settings(database_url=url)
+    database = get_database_for(url)
+    await database.create_all()
+    await seed(database, settings)
+    return settings
+
+
 def has_env(*names: str) -> bool:
     return all(os.environ.get(n) for n in names)

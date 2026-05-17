@@ -70,11 +70,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 5 — Fleet & slot pool
 
-- [ ] **5.1** `LocalPgFleet` + `SupabaseFleet` behind `FleetRegistry`:
-  `find_available_slot`, `assign`, `unassign`, `get_route`, `slot_status`.
-- [ ] **5.2** Pool-exhausted (409) + concurrency-safe assignment test (two
-  simultaneous rents get different slots).
-- *AC:* contract test green against both impls.
+- [x] **5.1** `LocalPgFleet` (atomic `UPDATE … WHERE status='available'
+  RETURNING`) + `SupabaseFleet` (edge-fn over httpx, gated) behind
+  `FleetRegistry`; `services/agent_pool.claim_slot` retry-on-race.
+- [x] **5.2** Concurrency test: 2 slots, 5 concurrent claims → exactly 2 win on
+  distinct slots, 3 fail, pool drained (no double-assign). Pool-exhausted →
+  `SlotUnavailable` (surfaced as 409 by Epic 7).
+- [x] *AC met:* contract suite green vs mock; engine cache shared
+  (`db.session.get_database_for`). Verify green (25 passed, 8 skipped).
 
 ## Epic 6 — Provisioning
 

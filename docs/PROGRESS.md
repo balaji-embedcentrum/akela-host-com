@@ -8,18 +8,18 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 5 — Fleet & slot pool (next)
+- **Current epic:** Epic 6 — Provisioning (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend boots; SPA builds; data layer (PG-verified); auth +
-  billing done (checkout→webhook idempotent, offline)
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (22 passed, 7 skipped)
+- **Local stack:** backend boots; SPA builds; data layer (PG-verified); auth,
+  billing, fleet+pool done (atomic claim, concurrency-proven)
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (25 passed, 8 skipped)
 
 ## Next action
 
-Begin **Epic 5** — `LocalPgFleet` + `SupabaseFleet` behind `FleetRegistry`
-(get_available/assign/unassign/get_slot/resolve_route/list); atomic slot claim
-(`UPDATE … WHERE status='available'`); concurrency-safe test. Then Epic 6
-(provisioning), Epic 7 wires the rent→deploy orchestration into the paid seam.
+Begin **Epic 6** — `LocalDockerProvisioner` + `SshProvisioner` behind
+`AgentProvisioner`; render the §5 per-slot compose; deploy/stop/start/recycle/
+status; user `.env` root-only, never persisted (D12); deploy/recycle scripts.
+Then Epic 7 (agents API + rent→deploy orchestration).
 
 ## Needs user (not code-blocking)
 
@@ -38,6 +38,14 @@ Begin **Epic 5** — `LocalPgFleet` + `SupabaseFleet` behind `FleetRegistry`
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 5 complete (fleet & slot pool)
+- `LocalPgFleet` (atomic claim via UPDATE…RETURNING) + `SupabaseFleet` (edge-fn,
+  httpx, gated). `services/agent_pool.claim_slot` retries on lost race.
+- `db.session.get_database_for` lru_cache shares one engine across DI + providers
+  (dependencies refactored to use it).
+- Concurrency test: 2 slots / 5 racers → exactly 2 distinct winners, pool drained.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (25 passed, 8 skipped). **Next:** Epic 6.
 
 ### 2026-05-17 — Epic 4 complete (billing)
 - `FakeBilling` (mock-pay → same handler) + `StripeBilling` (lazy SDK, sig verify).
