@@ -14,6 +14,7 @@ from backend.dependencies import (
     current_user,
     db_session,
     get_billing,
+    get_email,
     get_fleet,
     get_provisioner,
     get_settings_dep,
@@ -21,10 +22,12 @@ from backend.dependencies import (
 from backend.providers.base import (
     AgentProvisioner,
     BillingProvider,
+    EmailProvider,
     FleetRegistry,
     ProviderError,
 )
 from backend.schemas.agents import AgentOut, CheckoutIn, CheckoutOut, RedeployIn, RenameIn
+from backend.services import notifications
 from backend.services.provisioning import recycle_agent
 
 router = APIRouter(prefix="/api/agents", tags=["agents"])
@@ -184,6 +187,7 @@ async def cancel_agent(
     billing: BillingProvider = Depends(get_billing),
     fleet: FleetRegistry = Depends(get_fleet),
     provisioner: AgentProvisioner = Depends(get_provisioner),
+    email: EmailProvider = Depends(get_email),
 ) -> Agent:
     """Cancel the rental. MVP recycles immediately; the period-end deferral is
     Epic 11's scheduled sweep (PRD §2 / ToS §4)."""
@@ -198,5 +202,7 @@ async def cancel_agent(
             pass
     if sub:
         sub.status = "canceled"
+    await notifications.send_cancellation(email, to=user.email, agent=agent)
     await recycle_agent(agent, fleet=fleet, provisioner=provisioner)
+    await notifications.send_recycled(email, to=user.email, agent=agent)
     return agent

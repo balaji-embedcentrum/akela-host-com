@@ -8,19 +8,18 @@ Append-only state. Newest entry on top. At the start of every session read the
 ## Status
 
 - **Phase:** 1 (MVP)
-- **Current epic:** Epic 9 — Email notifications (next)
+- **Current epic:** Epic 10 — Admin panel (next)
 - **Last updated:** 2026-05-17
-- **Local stack:** backend MVP + themed SPA complete; SPA builds/typechecks; full
-  rent flow exercised via API
-- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (34 passed, 8 skipped); SPA
-  `npm run build` ✓
+- **Local stack:** backend MVP + SPA + lifecycle emails complete
+- **`make verify`:** green — ruff ✓ mypy ✓ pytest ✓ (36 passed, 8 skipped); SPA
+  build ✓
 
 ## Next action
 
-Begin **Epic 9** — `notifications` service emitting the lifecycle templates
-(welcome, agent_deployed, renewal_reminder, cancellation_confirmed,
-agent_recycled, agent_offline) via `EmailProvider`; wire into provision/cancel;
-`ResendEmail` real impl. Then Epic 10 (admin), Epic 11 (hardening + full E2E).
+Begin **Epic 10** — admin backend (`/api/admin/*`: system overview, per-VPS
+health, per-agent table, force stop/restart/wipe/recycle, users list),
+`require_admin`-gated; expand the SPA Admin page. Then Epic 11 (recycle sweep,
+rate limiting, README, full E2E).
 
 ## Needs user (not code-blocking)
 
@@ -39,6 +38,15 @@ agent_recycled, agent_offline) via `EmailProvider`; wire into provision/cancel;
 ---
 
 ## Log
+
+### 2026-05-17 — Epic 9 complete (email notifications)
+- `email_templates` (shared subjects/bodies, safe render); `email_console`
+  refactored to it; `email_resend` real impl (lazy SDK, gated).
+- `services/notifications` (best-effort) wired: welcome (first agent only) +
+  agent_deployed on deploy; agent_offline on payment_failed; cancellation +
+  agent_recycled on cancel. `_finalize` extended for payment_failed email.
+- `test_notifications` asserts templates hit the sink incl. single welcome.
+- Verified: ruff ✓ mypy ✓ pytest ✓ (36 passed, 8 skipped). **Next:** Epic 10.
 
 ### 2026-05-17 — Epic 8 complete (frontend SPA)
 - Typed `lib/api.ts`, `AuthProvider`/`RequireAuth`, `Layout`, theme toggle,

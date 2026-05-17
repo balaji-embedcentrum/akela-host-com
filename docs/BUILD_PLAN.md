@@ -118,9 +118,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `(→Dn)` see DECISIONS
 
 ## Epic 9 — Email notifications
 
-- [ ] **9.1** `ConsoleEmail` + `ResendEmail`; templates: welcome, agent_deployed,
-  renewal_reminder(3d), cancellation_confirmed, agent_recycled, agent_offline.
-- *AC:* each lifecycle event emits the right template to the sink; assertable.
+- [x] **9.1** Shared `email_templates` (subjects+bodies); `ConsoleEmail` (sink)
+  + `ResendEmail` (lazy SDK, gated). `services/notifications` maps lifecycle →
+  template, best-effort. Wired: welcome (first agent only) + agent_deployed on
+  deploy; agent_offline on payment_failed; cancellation_confirmed + agent_recycled
+  on cancel; renewal_reminder ready for Epic 11 sweep.
+- [x] *AC met:* `test_notifications` asserts each event's template hits the sink
+  (incl. no duplicate welcome on 2nd agent). Verify green (36 passed, 8 skipped).
 
 ## Epic 10 — Admin panel
 
